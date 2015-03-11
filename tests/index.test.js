@@ -16,9 +16,8 @@ describe('retry-function test case', function () {
             myFunc.yieldsAsync(null);
 
             retryFn({
-                method: myFunc,
-                callback: myCallback
-            });
+                method: myFunc
+            }, myCallback);
         });
 
         it('should retry fn until success', function (done) {
@@ -34,12 +33,11 @@ describe('retry-function test case', function () {
 
             retryFn({
                 method: myFunc,
-                callback: myCallback,
                 options: {
                     minTimeout: 10,
                     retries: 5
                 }
-            });
+            }, myCallback);
         });
 
         it('should have error if never succeeds', function (done) {
@@ -55,12 +53,11 @@ describe('retry-function test case', function () {
 
             retryFn({
                 method: myFunc,
-                callback: myCallback,
                 options: {
                     minTimeout: 10,
                     retries: 2
                 }
-            });
+            }, myCallback);
         });
 
         it('should not continue if shouldRetry says not to', function (done) {
@@ -77,7 +74,6 @@ describe('retry-function test case', function () {
 
             retryFn({
                 method: myFunc,
-                callback: myCallback,
                 shouldRetry: function (err) {
                     return err.message === 'nope';
                 },
@@ -85,13 +81,19 @@ describe('retry-function test case', function () {
                     minTimeout: 10,
                     retries: 5
                 }
-            });
+            }, myCallback);
         });
 
         it('should fail if validation fails', function () {
             Assert.throws(function () {
-                retryFn({});
+                retryFn({}, function () {});
             }, Error, '"method" is required');
+        });
+
+        it('should fail if callback missing', function () {
+            Assert.throws(function () {
+                retryFn({});
+            }, Error, '"callback" must be a function');
         });
     });
 });

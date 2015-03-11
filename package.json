@@ -1,6 +1,6 @@
 {
   "name": "retry-function",
-  "version": "1.0.1",
+  "version": "1.1.0",
   "description": "Wrapper to retry function calls with an exponential backoff strategy",
   "main": "index.js",
   "scripts": {

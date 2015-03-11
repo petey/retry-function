@@ -5,9 +5,10 @@ var retry = require('retry'),
  * Executes retry operation
  * @method execRetry
  * @param  {Object}     config  Retry-function configuration
+ * @param  {Function}   callback    Called when done fn(err, ...);
  * @private
  */
-function execRetry(config) {
+function execRetry(config, callback) {
     config.shouldRetry = config.shouldRetry || function () {return true;};
     config.options = config.options || {};
     config.arguments = config.arguments || [];
@@ -25,7 +26,7 @@ function execRetry(config) {
                 return;
             }
 
-            config.callback.apply(null, args);
+            callback.apply(null, args);
         });
 
         config.method.apply(null, attemptArgs);
@@ -35,10 +36,11 @@ function execRetry(config) {
 /**
  * Validates inputs to retry execution
  * @method validateRetry
- * @param  {Object}     config  Retry-function configuration
+ * @param  {Object}     config      Retry-function configuration
+ * @param  {Function}   callback    Called when done fn(err, ...);
  * @private
  */
-function validateRetry(config) {
+function validateRetry(config, callback) {
     var schema = joi.object().keys({
             options: joi.object().keys({
                 retries: joi.number().optional(),
@@ -50,8 +52,11 @@ function validateRetry(config) {
             arguments: joi.array().optional(),
             shouldRetry: joi.func().optional(),
             method: joi.func().required(),
-            callback: joi.func().required(),
         }).required();
+
+    if (typeof callback !== 'function') {
+        throw new Error('"callback" must be a function');
+    }
 
     joi.validate(config, schema, function (err) {
         if (err) {
@@ -59,7 +64,7 @@ function validateRetry(config) {
                 return detail.message;
             }).join(','));
         }
-        execRetry(config);
+        execRetry(config, callback);
     });
 }
 
@@ -77,5 +82,6 @@ function validateRetry(config) {
  *     @param  {Number}     [config.options.minTimeout=1000]        The number of milliseconds before starting the first retry.
  *     @param  {Number}     [config.options.maxTimeout=Infinity]    The maximum number of milliseconds between two retries.
  *     @param  {Boolean}    [config.options.randomize=false]        Randomizes the timeouts by multiplying with a factor between 1 to 2.
+ * @param  {Function}       Callback                    Called when done fn(err, ...);
  */
 module.exports = validateRetry;
