@@ -1,4 +1,4 @@
-# retry-function
+# retry-function [ ![Codeship Status for petey/retry-function](https://codeship.com/projects/3b013d30-aa68-0132-9077-1ec81ced6103/status?branch=master)](https://codeship.com/projects/68028)
 Wrapper to retry function calls with an exponential backoff strategy
 
 ## Installation:
