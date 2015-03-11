@@ -1,6 +1,6 @@
 {
   "name": "retry-function",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Wrapper to retry function calls with an exponential backoff strategy",
   "main": "index.js",
   "scripts": {
@@ -10,7 +10,7 @@
     "type": "git",
     "url": "git://github.com/petey/retry-function.git"
   },
-  "author": "Pete Peterson <petey@yahoo-inc.com>",
+  "author": "Pete Peterson <petey31@yahoo.com>",
   "bugs": {
     "url": "https://github.com/petey/retry-function/issues"
   },
@@ -23,5 +23,6 @@
     "chai": "~2.1.1",
     "jenkins-mocha": "^2.2.0",
     "sinon": "^1.13.0"
-  }
+  },
+  "license": "MIT"
 }
