@@ -13,9 +13,8 @@ var myFunc = function (cb) {return process.nextTick(cb(null, 'foo'))},
     myCallback = function (err, data) {};
 
 retryFn({
-    method: myFunc,
-    callback: myCallback
-});
+    method: myFunc
+}, myCallback);
 ```
 
 ## Configuring retry
@@ -38,11 +37,10 @@ var myFunc = function (cb) {return process.nextTick(cb(null, 'foo'))},
 
 retryFn({
     method: myFunc,
-    callback: myCallback,
     options: {
         retries: 5
     }
-});
+}, myCallback);
 ```
 
 ## Conditional Retry
@@ -57,9 +55,8 @@ var myFunc = function (cb) {return process.nextTick(cb(null, 'foo'))},
 
 retryFn({
     method: myFunc,
-    callback: myCallback,
     shouldRetry: function (err) { return err.code >= 500; }
-});
+}, myCallback);
 ```
 
 ## Additional args
@@ -74,7 +71,6 @@ var myFunc = function (args, cb) {return process.nextTick(cb(null, 'foo'))},
 
 retryFn({
     method: myFunc,
-    callback: myCallback,
     arguments: ['foo']
-});
+}, myCallback);
 ```
