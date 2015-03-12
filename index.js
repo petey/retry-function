@@ -1,3 +1,7 @@
+// Copyright 2015 Yahoo Inc.
+// Licensed under the MIT license.
+// See the included LICENSE file for terms.
+
 var retry = require('retry'),
     joi = require('joi');
 

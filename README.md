@@ -74,3 +74,5 @@ retryFn({
     arguments: ['foo']
 }, myCallback);
 ```
+
+Code licensed under the MIT license. See LICENSE file for terms.

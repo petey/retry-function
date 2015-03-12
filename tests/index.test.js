@@ -1,3 +1,7 @@
+// Copyright 2015 Yahoo Inc.
+// Licensed under the MIT license.
+// See the included LICENSE file for terms.
+
 /*global describe, it */
 var sinon = require('sinon'),
     Assert = require('chai').assert,
