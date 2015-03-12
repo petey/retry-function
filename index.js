@@ -16,6 +16,7 @@ function execRetry(config, callback) {
     config.shouldRetry = config.shouldRetry || function () {return true;};
     config.options = config.options || {};
     config.arguments = config.arguments || [];
+    config.context = config.context || null;
 
     var operation = retry.operation(config.options);
 
@@ -33,7 +34,7 @@ function execRetry(config, callback) {
             callback.apply(null, args);
         });
 
-        config.method.apply(null, attemptArgs);
+        config.method.apply(config.context, attemptArgs);
     });
 }
 
@@ -53,6 +54,7 @@ function validateRetry(config, callback) {
                 maxTimeout: joi.number().optional(),
                 randomize: joi.boolean().optional(),
             }).optional(),
+            context: joi.object().optional(),
             arguments: joi.array().optional(),
             shouldRetry: joi.func().optional(),
             method: joi.func().required(),
@@ -80,6 +82,7 @@ function validateRetry(config, callback) {
  *     @param  {Function}   [config.shouldRetry=true]   Synchronous method takes an error object to determine if a retry is desired. (Boolean) fn(err). Defaults to always retry.
  *     @param  {Function}   config.callback             Function to call retry is complete
  *     @param  {Array}      config.arguments            Arguments that are supplied to the function being retried
+ *     @param  {Object}     [config.context=null]       Context to supply to fn.apply() when calling method
  *     @param  {Object}     [config.options]            Retry configuration https://www.npmjs.com/package/retry
  *     @param  {Number}     [config.options.retries=10]             The maximum amount of times to retry the operation.
  *     @param  {Number}     [config.options.factor=2]               The exponential factor to use.
