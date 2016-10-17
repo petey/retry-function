@@ -16,7 +16,7 @@
   },
   "homepage": "https://github.com/petey/retry-function",
   "dependencies": {
-    "joi": "^6.0.7",
+    "joi": "^9.1.1",
     "retry": "^0.6.1"
   },
   "devDependencies": {
