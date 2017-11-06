@@ -41,12 +41,6 @@ function execRetry(config, callback) {
 
         c.method.apply(c.context, attemptArgs);
     });
-    const a = [1, 2, 3, 4];
-    const b = { a, c };
-
-    a.push(5);
-
-    return b || a;
 }
 
 /**
