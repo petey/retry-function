@@ -1,6 +1,6 @@
 {
   "name": "retry-function",
-  "version": "2.1.0",
+  "version": "3.0.0",
   "description": "Wrapper to retry function calls with an exponential backoff strategy",
   "main": "index.js",
   "scripts": {
@@ -19,16 +19,16 @@
   },
   "homepage": "https://github.com/petey/retry-function",
   "dependencies": {
-    "joi": "^13.0.1",
-    "retry": "^0.10.0"
+    "joi": "^14.0.1",
+    "retry": "^0.12.0"
   },
   "devDependencies": {
-    "chai": "^4.1.2",
-    "eslint": "^4.10.0",
-    "eslint-config-screwdriver": "^3.0.0",
-    "eslint-plugin-import": "^2.0.1",
+    "chai": "^4.2.0",
+    "eslint": "^5.8.0",
+    "eslint-config-screwdriver": "^3.0.1",
+    "eslint-plugin-import": "^2.14.0",
     "jenkins-mocha": "^6.0.0",
-    "sinon": "^4.1.1"
+    "sinon": "^7.1.0"
   },
   "license": "MIT"
 }
