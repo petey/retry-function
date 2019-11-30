@@ -1,3 +1,5 @@
+/* eslint-disable max-lines-per-function */
+
 'use strict';
 
 // Copyright 2015 Yahoo Inc.
@@ -17,8 +19,8 @@ describe('retry-function test case', () => {
     });
 
     describe('retryFn', () => {
-        it('should not retry if first run successful', (done) => {
-            myCallback = (err) => {
+        it('should not retry if first run successful', done => {
+            myCallback = err => {
                 assert.isNull(err);
                 assert.isTrue(myFunc.calledOnce);
                 done();
@@ -26,13 +28,16 @@ describe('retry-function test case', () => {
 
             myFunc.yieldsAsync(null);
 
-            retryFn({
-                method: myFunc
-            }, myCallback);
+            retryFn(
+                {
+                    method: myFunc
+                },
+                myCallback
+            );
         });
 
-        it('should retry fn until success', (done) => {
-            myCallback = (err) => {
+        it('should retry fn until success', done => {
+            myCallback = err => {
                 assert.isNull(err);
                 assert.isTrue(myFunc.calledThrice);
                 done();
@@ -41,17 +46,20 @@ describe('retry-function test case', () => {
             myFunc.yieldsAsync(new Error('nope'));
             myFunc.onCall(2).yieldsAsync(null);
 
-            retryFn({
-                method: myFunc,
-                options: {
-                    minTimeout: 10,
-                    retries: 5
-                }
-            }, myCallback);
+            retryFn(
+                {
+                    method: myFunc,
+                    options: {
+                        minTimeout: 10,
+                        retries: 5
+                    }
+                },
+                myCallback
+            );
         });
 
-        it('should have error if never succeeds', (done) => {
-            myCallback = (err) => {
+        it('should have error if never succeeds', done => {
+            myCallback = err => {
                 assert.isNotNull(err);
                 assert.equal(err.message, 'nope');
                 assert.isTrue(myFunc.calledThrice);
@@ -60,17 +68,20 @@ describe('retry-function test case', () => {
 
             myFunc.yieldsAsync(new Error('nope'));
 
-            retryFn({
-                method: myFunc,
-                options: {
-                    minTimeout: 10,
-                    retries: 2
-                }
-            }, myCallback);
+            retryFn(
+                {
+                    method: myFunc,
+                    options: {
+                        minTimeout: 10,
+                        retries: 2
+                    }
+                },
+                myCallback
+            );
         });
 
-        it('should not continue if shouldRetry says not to', (done) => {
-            myCallback = (err) => {
+        it('should not continue if shouldRetry says not to', done => {
+            myCallback = err => {
                 assert.isNotNull(err);
                 assert.equal(err.message, 'yep');
                 assert.isTrue(myFunc.calledThrice);
@@ -80,26 +91,37 @@ describe('retry-function test case', () => {
             myFunc.yieldsAsync(new Error('nope'));
             myFunc.onCall(2).yieldsAsync(new Error('yep'));
 
-            retryFn({
-                method: myFunc,
-                shouldRetry: err => err.message === 'nope',
-                options: {
-                    minTimeout: 10,
-                    retries: 5
-                }
-            }, myCallback);
+            retryFn(
+                {
+                    method: myFunc,
+                    shouldRetry: err => err.message === 'nope',
+                    options: {
+                        minTimeout: 10,
+                        retries: 5
+                    }
+                },
+                myCallback
+            );
         });
 
         it('should fail if validation fails', () => {
-            assert.throws(() => {
-                retryFn({}, () => ({}));
-            }, Error, '"method" is required');
+            assert.throws(
+                () => {
+                    retryFn({}, () => ({}));
+                },
+                Error,
+                '"method" is required'
+            );
         });
 
         it('should fail if callback missing', () => {
-            assert.throws(() => {
-                retryFn({});
-            }, Error, '"callback" must be a function');
+            assert.throws(
+                () => {
+                    retryFn({});
+                },
+                Error,
+                '"callback" must be a function'
+            );
         });
     });
 });

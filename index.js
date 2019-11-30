@@ -5,7 +5,7 @@
 // See the included LICENSE file for terms.
 
 const retry = require('retry');
-const joi = require('joi');
+const joi = require('@hapi/joi');
 
 /**
  * Executes retry operation
@@ -17,9 +17,11 @@ const joi = require('joi');
 function execRetry(config, callback) {
     const c = config;
 
-    c.shouldRetry = c.shouldRetry || function shouldRetry() {
-        return true;
-    };
+    c.shouldRetry =
+        c.shouldRetry ||
+        function shouldRetry() {
+            return true;
+        };
     c.options = c.options || {};
     c.arguments = c.arguments || [];
     c.context = c.context || null;
@@ -51,30 +53,39 @@ function execRetry(config, callback) {
  * @private
  */
 function validateRetry(config, callback) {
-    const schema = joi.object().keys({
-        options: joi.object().keys({
-            retries: joi.number().optional(),
-            factor: joi.number().optional(),
-            minTimeout: joi.number().optional(),
-            maxTimeout: joi.number().optional(),
-            randomize: joi.boolean().optional()
-        }).optional(),
-        context: joi.object().optional(),
-        arguments: joi.array().optional(),
-        shouldRetry: joi.func().optional(),
-        method: joi.func().required()
-    }).required();
+    const schema = joi
+        .object()
+        .keys({
+            options: joi
+                .object()
+                .keys({
+                    retries: joi.number().optional(),
+                    factor: joi.number().optional(),
+                    minTimeout: joi.number().optional(),
+                    maxTimeout: joi.number().optional(),
+                    randomize: joi.boolean().optional()
+                })
+                .optional(),
+            context: joi.object().optional(),
+            arguments: joi.array().optional(),
+            shouldRetry: joi.func().optional(),
+            method: joi.func().required()
+        })
+        .required();
 
     if (typeof callback !== 'function') {
         throw new Error('"callback" must be a function');
     }
 
-    joi.validate(config, schema, (err) => {
-        if (err) {
-            throw new Error(err.details.map(detail => detail.message).join(','));
-        }
-        execRetry(config, callback);
-    });
+    const result = schema.validate(config);
+
+    if (result.error) {
+        throw new Error(
+            result.error.details.map(detail => detail.message).join(',')
+        );
+    }
+
+    execRetry(config, callback);
 }
 
 /**
