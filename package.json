@@ -4,7 +4,7 @@
   "description": "Wrapper to retry function calls with an exponential backoff strategy",
   "main": "index.js",
   "scripts": {
-    "test": "jenkins-mocha tests/*",
+    "test": "nyc --reporter=lcov --reporter=text-summary mocha tests/*",
     "lint": "eslint ."
   },
   "repository": {
@@ -29,6 +29,8 @@
     "eslint-config-airbnb-base": "^14.2.0",
     "eslint-plugin-import": "^2.22.1",
     "jenkins-mocha": "^8.0.0",
+    "mocha": "^8.2.0",
+    "nyc": "^15.1.0",
     "sinon": "^9.2.1"
   },
   "license": "MIT"
