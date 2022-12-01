@@ -31,7 +31,7 @@
     "jenkins-mocha": "^8.0.0",
     "mocha": "^8.2.0",
     "nyc": "^15.1.0",
-    "sinon": "^9.2.1"
+    "sinon": "^15.0.0"
   },
   "license": "MIT"
 }
