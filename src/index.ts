@@ -2,45 +2,55 @@
 // Licensed under the MIT license.
 // See the included LICENSE file for terms.
 
-const retry = require('retry');
-const joi = require('joi');
+import retry from "retry";
+
+export type AnyFunction = (...args: any[]) => void;
+
+export interface RetryConfig<T> {
+  options?: retry.OperationOptions;
+  context?: any;
+  arguments?: any[];
+  shouldRetry?: (err: any) => boolean;
+  method: T;
+}
+
+const defaultShouldRetry = () => true;
 
 /**
  * Executes retry operation
  * @method execRetry
- * @param  {Object}     config  Retry-function configuration
+ * @param  {RetryConfig}     config  Retry-function configuration
  * @param  {Function}   callback    Called when done fn(err, ...);
  * @private
  */
-function execRetry(config, callback) {
-    const c = config;
+const execRetry = <T extends AnyFunction>(
+  {
+    shouldRetry = defaultShouldRetry,
+    options = {},
+    arguments: configArguments = [],
+    context = null,
+    method,
+  }: RetryConfig<T>,
+  callback: T,
+) => {
+  const operation = retry.operation(options);
 
-    c.shouldRetry = c.shouldRetry
-        || function shouldRetry() {
-            return true;
-        };
-    c.options = c.options || {};
-    c.arguments = c.arguments || [];
-    c.context = c.context || null;
+  operation.attempt(() => {
+    const attemptArgs = configArguments.slice();
 
-    const operation = retry.operation(c.options);
+    attemptArgs.push((...args: Parameters<T>) => {
+      const err = args[0];
 
-    operation.attempt(() => {
-        const attemptArgs = c.arguments.slice();
+      if (shouldRetry?.(err) && operation.retry(err)) {
+        return;
+      }
 
-        attemptArgs.push((...args) => {
-            const err = args[0];
-
-            if (c.shouldRetry(err) && operation.retry(err)) {
-                return;
-            }
-
-            callback(...args);
-        });
-
-        c.method.apply(c.context, attemptArgs);
+      callback(...args);
     });
-}
+
+    method.apply(context, attemptArgs);
+  });
+};
 
 /**
  * Validates inputs to retry execution
@@ -49,41 +59,13 @@ function execRetry(config, callback) {
  * @param  {Function}   callback    Called when done fn(err, ...);
  * @private
  */
-function validateRetry(config, callback) {
-    const schema = joi
-        .object()
-        .keys({
-            options: joi
-                .object()
-                .keys({
-                    retries: joi.number().optional(),
-                    factor: joi.number().optional(),
-                    minTimeout: joi.number().optional(),
-                    maxTimeout: joi.number().optional(),
-                    randomize: joi.boolean().optional(),
-                })
-                .optional(),
-            context: joi.object().optional(),
-            arguments: joi.array().optional(),
-            shouldRetry: joi.func().optional(),
-            method: joi.func().required(),
-        })
-        .required();
+const validateRetry = <T extends AnyFunction>(config: RetryConfig<T>, callback: T) => {
+  if (typeof callback !== "function") {
+    throw new Error('"callback" must be a function');
+  }
 
-    if (typeof callback !== 'function') {
-        throw new Error('"callback" must be a function');
-    }
-
-    const result = schema.validate(config);
-
-    if (result.error) {
-        throw new Error(
-            result.error.details.map((detail) => detail.message).join(','),
-        );
-    }
-
-    execRetry(config, callback);
-}
+  execRetry(config, callback);
+};
 
 /**
  * Retries a function call with exponential backoff
@@ -102,4 +84,5 @@ function validateRetry(config, callback) {
  * @param  {Boolean}    [config.options.randomize=false]        Randomizes the timeouts by multiplying with a factor between 1 to 2.
  * @param  {Function}   Callback                    Called when done fn(err, ...);
  */
-module.exports = validateRetry;
+export const retryFn = validateRetry;
+export default validateRetry;

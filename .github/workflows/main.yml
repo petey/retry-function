@@ -1,0 +1,29 @@
+name: CI
+on: [push]
+jobs:
+  build:
+    name: Build, lint, and test
+
+    runs-on: "ubuntu-slim"
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v7
+
+      - name: Setup Vite-plus
+        uses: voidzero-dev/setup-vp@v1.22.0
+        with:
+          node-version: lts
+          cache: true
+          install: true
+
+      - name: Check
+        run: yarn check
+
+      - name: Test
+        run: yarn test
+
+      - name: Build
+        run: yarn build
+
+      - name: Size
+        run: yarn size
